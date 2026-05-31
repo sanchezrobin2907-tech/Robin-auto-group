@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robin Auto Group</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #1a1a2e; color: white; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    h1 { color: #e94560; margin-bottom: 20px; }
+    #chat { width: 90%; max-width: 600px; background: #16213e; border-radius: 10px; padding: 20px; }
+    #messages { height: 300px; overflow-y: auto; margin-bottom: 15px; }
+    .msg { margin: 10px 0; padding: 10px; border-radius: 8px; }
+    .user { background: #e94560; text-align: right; }
+    .bot { background: #0f3460; }
+    #input-area { display: flex; gap: 10px; }
+    input { flex: 1; padding: 10px; border-radius: 8px; border: none; }
+    button { padding: 10px 20px; background: #e94560; color: white; border: none; border-radius: 8px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>🚗 Robin Auto Group</h1>
+  <div id="chat">
+    <div id="messages"></div>
+    <div id="input-area">
+      <input type="text" id="userInput" placeholder="Escribe tu pregunta..." />
+      <button onclick="sendMessage()">Enviar</button>
+    </div>
+  </div>
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById('userInput');
+      const messages = document.getElementById('messages');
+      const text = input.value.trim();
+      if (!text) return;
+      messages.innerHTML += `<div class="msg user">${text}</div>`;
+      input.value = '';
+      const res = await fetch('/api/claude', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await res.json();
+      messages.innerHTML += `<div class="msg bot">${data.reply}</div>`;
+      messages.scrollTop = messages.scrollHeight;
+    }
+  </script>
+</body>
+</html>
